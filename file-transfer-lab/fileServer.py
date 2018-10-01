@@ -49,15 +49,17 @@ while True:
                     header['type'] = data[0]
                     header['url'] = current_dir + data[1]
                     if not os.path.exists(data[1]):
-                        open(data[1], 'w+').close()
+                        open(header['url'], 'w+').close()
                     else:
                         conn.send("Closing connection. File exists in server. EOF".encode())
                         conn.close()
                         sys.exit(0)
-                    output_file = open(data[1], 'a')
+                    output_file = open(header['url'], 'a')
                     data = ' '.join(data[2::])
                     output_file.write(data)
+                    print(data)
                 else:
+                    print(data)
                     output_file.write(data)
             except:
                 continue
