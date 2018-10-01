@@ -54,12 +54,13 @@ if s is None:
 while not os.path.exists(file):
     file = input("Enter the name of the file you wish to send:")
 
-header = "PUT 127.0.0.1:50001/{}".format(file)
-s.send(header.encode())
+header = "PUT 127.0.0.1:50001/{}".format(file).encode()
+s.send(header)
 received_len = 0
 sent_len = len(header)
 while received_len < sent_len:
     data = s.recv(100).decode()
+    print(len(data))
     received_len += len(data)
 
 #input_file = open(file, 'r')
@@ -70,6 +71,7 @@ with open(file, 'r') as file:
         sent_len = len(line)
         while received_len < sent_len:
             data = s.recv(100).decode()
+            print(len(data))
             received_len += len(data)
 s.send("EOF")
 s.shutdown(socket.SHUT_WR)      # no more output
