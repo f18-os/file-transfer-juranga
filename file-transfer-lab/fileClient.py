@@ -55,16 +55,17 @@ file = ""
 while not os.path.exists(file):
     file = input("Enter the name of the file you wish to send:")
 
-header = "PUT {}/{}".format(os.getcwd(), file).encode()
+header = "PUT {}".format(file).encode()
 s.send(header)
 received_len = 0
 sent_len = len(header)
 while received_len < sent_len:
     data = s.recv(100).decode()
-    print(len(data))
+    if data[-3:] == "EOF":
+        s.close()
+        sys.exit(0)
     received_len += len(data)
 
-#input_file = open(file, 'r')
 with open(file, 'r') as file:
     for line in file:
         s.send(line.encode())
@@ -72,10 +73,7 @@ with open(file, 'r') as file:
         sent_len = len(line)
         while received_len < sent_len:
             data = s.recv(100).decode()
-            print(len(data))
-            print(data)
             received_len += len(data)
-print('out')
 s.send("EOF".encode())
 s.shutdown(socket.SHUT_WR)      # no more output
 while 1:

@@ -4,6 +4,8 @@ import socket, sys, re, os
 sys.path.append("../lib")
 import params
 
+current_dir = os.getcwd() + '/server/'
+
 switchesVarDefaults = (
         (('-l', '--listenPort') ,'listenPort', 50011),
         (('-?', '--usage'), "usage", False), # boolean (set if present)
@@ -42,7 +44,7 @@ while True:
                 if data.startswith('PUT'):
                     data = data.split()
                     header['type'] = data[0]
-                    header['url'] = data[1]
+                    header['url'] = current_dir + data[1]
                     if not os.path.exists(data[1]):
                         open(data[1], 'w+').close()
                     else:
