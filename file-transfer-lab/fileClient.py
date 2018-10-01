@@ -66,6 +66,7 @@ while received_len < sent_len:
         sys.exit(0)
     received_len += len(data)
 
+print('sending file')
 with open(file, 'r') as file:
     for line in file:
         s.send(line.encode())
@@ -76,9 +77,9 @@ with open(file, 'r') as file:
             received_len += len(data)
 s.send("EOF".encode())
 s.shutdown(socket.SHUT_WR)      # no more output
+print('shutting down client')
 while 1:
     data = s.recv(100).decode()
-    print(data)
     if data[-3:] == "EOF":
         break
 s.close()
