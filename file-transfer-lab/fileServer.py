@@ -20,20 +20,19 @@ server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind((listenAddr, listenPort))
 server.listen(2)
 
+header = {
+    "type": "",
+    "url": "",
+    "data": ""
+}
+output_file = None
 while True:
-    conn, addr = s.accept()
+    conn, addr = server.accept()
     if not os.fork():
-        try:
-            header = {
-                "type": "",
-                "url": "",
-                "data": data
-            }
-            data = server.recv(100).decode()
-            conn.send(data)
-            data_len = len(data)
-            output_file = None
-            while data_len <= 100 and not data_len[:-3] == "EOF":
+        while True:
+            try:
+                data = conn.recv(100).decode()
+                conn.sendall(data.encode())
                 if data.startswith('PUT'):
                     data = data.split()
                     header['type'] = data[0]
@@ -49,10 +48,11 @@ while True:
                     output_file.write(data)
                 else:
                     output_file.write(data)
-            if data_len[:-3] == "EOF":
-                output_file.write(data[0:-3])
-                conn.send("File read. Closing connection. EOF".encode())
-                output_file.close()
-                conn.close()
-                sys.exit(0)
-            
+                if data[:-3] == "EOF":
+                    output_file.write(data[0:-3])
+                    conn.send("File read. Closing connection. EOF".encode())
+                    output_file.close()
+                    conn.close()
+                    sys.exit(0)
+            except:
+                pass

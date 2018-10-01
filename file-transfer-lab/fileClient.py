@@ -59,17 +59,17 @@ s.send(header.encode())
 received_len = 0
 sent_len = len(header)
 while received_len < sent_len:
-    data = s.recv(100)
+    data = s.recv(100).decode()
     received_len += len(data)
 
-input_file = open(file, 'r')
-with open(input_file, 'r') as file:
+#input_file = open(file, 'r')
+with open(file, 'r') as file:
     for line in file:
         s.send(line.encode())
         received_len = 0
         sent_len = len(line)
         while received_len < sent_len:
-            data = s.recv(100)
+            data = s.recv(100).decode()
             received_len += len(data)
 s.send("EOF")
 s.shutdown(socket.SHUT_WR)      # no more output
