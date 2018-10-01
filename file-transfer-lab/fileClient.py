@@ -5,7 +5,7 @@ import socket, sys, re, os
 sys.path.append("../lib")       # for params
 import params
 
-file = sys.argv[1]
+#file = sys.argv[1]
 
 switchesVarDefaults = (
     (('-s', '--server'), 'server', "127.0.0.1:50001"),
@@ -50,11 +50,12 @@ if s is None:
     print('could not open socket')
     sys.exit(1)
 
+file = ""
 # Check for File
 while not os.path.exists(file):
     file = input("Enter the name of the file you wish to send:")
 
-header = "PUT 127.0.0.1:50001/{}".format(file).encode()
+header = "PUT {}/{}".format(os.getcwd(), file).encode()
 s.send(header)
 received_len = 0
 sent_len = len(header)
@@ -75,7 +76,7 @@ with open(file, 'r') as file:
             print(data)
             received_len += len(data)
 print('out')
-s.send("EOF")
+s.send("EOF".encode())
 s.shutdown(socket.SHUT_WR)      # no more output
 while 1:
     data = s.recv(100).decode()

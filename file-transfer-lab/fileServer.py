@@ -5,7 +5,7 @@ sys.path.append("../lib")
 import params
 
 switchesVarDefaults = (
-        (('-l', '--listenPort') ,'listenPort', 50001),
+        (('-l', '--listenPort') ,'listenPort', 50011),
         (('-?', '--usage'), "usage", False), # boolean (set if present)
     )
 
@@ -32,6 +32,12 @@ while True:
         while True:
             try:
                 data = conn.recv(100).decode()
+                if data[-3:] == "EOF":
+                    output_file.write(data[0:-3])
+                    conn.send("File read. Closing connection. EOF".encode())
+                    output_file.close()
+                    conn.close()
+                    sys.exit(0)
                 conn.sendall(data.encode())
                 if data.startswith('PUT'):
                     data = data.split()
@@ -48,11 +54,5 @@ while True:
                     output_file.write(data)
                 else:
                     output_file.write(data)
-                if data[-3:] == "EOF":
-                    output_file.write(data[0:-3])
-                    conn.send("File read. Closing connection. EOF".encode())
-                    output_file.close()
-                    conn.close()
-                    sys.exit(0)
             except:
-                pass
+                continue
