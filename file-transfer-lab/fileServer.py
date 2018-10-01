@@ -30,6 +30,7 @@ while True:
                 "data": data
             }
             data = server.recv(100).decode()
+            conn.send(data)
             data_len = len(data)
             output_file = None
             while data_len <= 100 and not data_len[:-3] == "EOF":
@@ -39,18 +40,19 @@ while True:
                     header['url'] = data[1]
                     if not os.path.exists(data[1]):
                         open(data[1], 'w+').close()
-                        output_file = open(data[1], 'a')
                     else:
                         conn.send("Closing connection. File exists in server. EOF".encode())
                         conn.close()
                         sys.exit(0)
-                    for i in range(2, len(data)):
-                        output_file.write(data[3])
+                    output_file = open(data[1], 'a')
+                    data = ' '.join(data[2::])
+                    output_file.write(data)
                 else:
                     output_file.write(data)
             if data_len[:-3] == "EOF":
                 output_file.write(data[0:-3])
                 conn.send("File read. Closing connection. EOF".encode())
+                output_file.close()
                 conn.close()
                 sys.exit(0)
             
