@@ -56,6 +56,12 @@ while not os.path.exists(file):
 
 header = "PUT 127.0.0.1:50001/{}".format(file)
 s.send(header.encode())
+received_len = 0
+sent_len = len(header)
+while received_len < sent_len:
+    data = s.recv(100)
+    received_len += len(data)
+
 input_file = open(file, 'r')
 with open(input_file, 'r') as file:
     for line in file:
