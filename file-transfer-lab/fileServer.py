@@ -48,7 +48,7 @@ while True:
                     output_file.write(data)
                 else:
                     output_file.write(data)
-                if data[:-3] == "EOF":
+                if data[-3:] == "EOF":
                     output_file.write(data[0:-3])
                     conn.send("File read. Closing connection. EOF".encode())
                     output_file.close()

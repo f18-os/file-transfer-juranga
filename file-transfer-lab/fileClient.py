@@ -72,12 +72,14 @@ with open(file, 'r') as file:
         while received_len < sent_len:
             data = s.recv(100).decode()
             print(len(data))
+            print(data)
             received_len += len(data)
+print('out')
 s.send("EOF")
 s.shutdown(socket.SHUT_WR)      # no more output
 while 1:
     data = s.recv(100).decode()
+    print(data)
     if data[-3:] == "EOF":
-        print(data[0:-3])
         break
 s.close()
