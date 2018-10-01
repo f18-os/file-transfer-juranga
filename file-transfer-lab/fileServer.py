@@ -5,6 +5,9 @@ sys.path.append("../lib")
 import params
 
 current_dir = os.getcwd() + '/server/'
+if not os.path.isdir(current_dir):
+    fd = os.open(current_dir, os.O_RDONLY )
+    os.close(fd)
 
 switchesVarDefaults = (
         (('-l', '--listenPort') ,'listenPort', 50011),
