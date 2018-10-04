@@ -37,7 +37,7 @@ supported.
 
 	1) `python3 fileServer.py`
 
-    2) `python3 fileClient.py -s localhost:50016`
+    2) `python3 fileClient.py -s localhost:50001`
 
 
 4) Once ran, on the fileClient shell, you will be asked to input the name of a file you wish to send to the server. 

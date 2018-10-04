@@ -59,12 +59,18 @@ header = "PUT {}".format(file).encode()
 s.send(header)
 received_len = 0
 sent_len = len(header)
-while received_len < sent_len:
-    data = s.recv(100).decode()
-    if data[-3:] == "EOF":
-        s.close()
-        sys.exit(0)
-    received_len += len(data)
+
+try:
+    while received_len < sent_len:
+        data = s.recv(100).decode()
+        if data[-3:] == "EOF":
+            s.close()
+            sys.exit(0)
+        received_len += len(data)
+except:
+    print('Server has abruptly been shutdown. Try again later.')
+    s.close()
+    sys.exit(0)
 
 print('sending file')
 with open(file, 'r') as file:

@@ -9,7 +9,7 @@ if not os.path.exists(current_dir):
     os.makedirs(current_dir)
 
 switchesVarDefaults = (
-        (('-l', '--listenPort') ,'listenPort', 50016),
+        (('-l', '--listenPort') ,'listenPort', 50001),
         (('-?', '--usage'), "usage", False), # boolean (set if present)
     )
 
@@ -33,30 +33,36 @@ while True:
             "url": "",
             "data": ""
         }
-        while True:
-            data = conn.recv(100).decode()
-            if data == "":
-                continue
-            if data[-3:] == "EOF":
-                output_file.write(data[0:-3])
-                conn.send("File read. Closing connection. EOF".encode())
-                output_file.close()
-                conn.close()
-                sys.exit(0)
-            if data.startswith('PUT'):
-                dc = data
-                data = data.split()
-                header['type'] = data[0]
-                header['url'] = current_dir + data[1]
-                if not os.path.exists(header['url']):
-                    open(header['url'], 'w+').close()
-                else:
-                    conn.send("Closing connection. File exists in server. EOF".encode())
+        try:
+            while True:
+                data = conn.recv(100).decode()
+                if data == "":
+                    continue
+                if data[-3:] == "EOF":
+                    output_file.write(data[0:-3])
+                    conn.send("File read. Closing connection. EOF".encode())
+                    output_file.close()
                     conn.close()
                     sys.exit(0)
-                output_file = open(header['url'], 'a')
-                conn.send(dc.encode())
-            else:
-                output_file.write(data)
-                conn.send(data.encode())
+                if data.startswith('PUT'):
+                    dc = data
+                    data = data.split()
+                    header['type'] = data[0]
+                    header['url'] = current_dir + data[1]
+                    if not os.path.exists(header['url']):
+                        open(header['url'], 'w+').close()
+                    else:
+                        conn.send("Closing connection. File exists in server. EOF".encode())
+                        conn.close()
+                        sys.exit(0)
+                    output_file = open(header['url'], 'a')
+                    conn.send(dc.encode())
+                else:
+                    output_file.write(data)
+                    conn.send(data.encode())
+        except:
+            print('Connection lost!')
+            conn.close()
+            sys.exit(0)
+
 server.close()
