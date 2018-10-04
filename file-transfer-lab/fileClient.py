@@ -5,8 +5,6 @@ import socket, sys, re, os
 sys.path.append("../lib")       # for params
 import params
 
-#file = sys.argv[1]
-
 switchesVarDefaults = (
     (('-s', '--server'), 'server', "127.0.0.1:50001"),
     (('-?', '--usage'), "usage", False), # boolean (set if present)
@@ -67,25 +65,25 @@ try:
             s.close()
             sys.exit(0)
         received_len += len(data)
+
+    print('sending file')
+    with open(file, 'r') as file:
+        for line in file:
+            s.send(line.encode())
+            received_len = 0
+            sent_len = len(line)
+            while received_len < sent_len:
+                data = s.recv(100).decode()
+                received_len += len(data)
+    s.send("EOF".encode())
+    s.shutdown(socket.SHUT_WR)      # no more output
+    print('shutting down client')
+    while 1:
+        data = s.recv(100).decode()
+        if data[-3:] == "EOF":
+            break
 except:
     print('Server has abruptly been shutdown. Try again later.')
     s.close()
     sys.exit(0)
-
-print('sending file')
-with open(file, 'r') as file:
-    for line in file:
-        s.send(line.encode())
-        received_len = 0
-        sent_len = len(line)
-        while received_len < sent_len:
-            data = s.recv(100).decode()
-            received_len += len(data)
-s.send("EOF".encode())
-s.shutdown(socket.SHUT_WR)      # no more output
-print('shutting down client')
-while 1:
-    data = s.recv(100).decode()
-    if data[-3:] == "EOF":
-        break
 s.close()
