@@ -32,8 +32,7 @@ while True:
     if not os.fork():
         header = {
             "type": "",
-            "url": "",
-            "data": ""
+            "url": ""
         }
         try:
             while True:
@@ -47,7 +46,7 @@ while True:
                     conn.close()
                     break
                 if data.startswith('PUT'):
-                    dc = data
+                    data_copy = data
                     data = data.split()
                     header['type'] = data[0]
                     header['url'] = current_dir + data[1]
@@ -56,12 +55,13 @@ while True:
                         output_file = open(header['url'], 'a')
                     else:
                         output_file = open(header['url'], 'w+')
-                    conn.send(dc.encode())
+                    conn.send(data_copy.encode())
                 else:
-                    output_file.write(data)
+                    if header['type'] == "PUT":
+                        output_file.write(data)
                     conn.send(data.encode())
         except:
-            print('Something went wrong! Connection with clients has been lost.')
+            print('Something went wrong! Connection with client has been lost.')
             conn.send("EOF".encode())
             conn.close()
             sys.exit(1)
