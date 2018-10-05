@@ -23,10 +23,12 @@ if paramMap['usage']:
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind((listenAddr, listenPort))
 server.listen(2)
+print('Server now listening on port: {}'.format(listenPort))
 
 output_file = None
 while True:
     conn, addr = server.accept()
+    print('Connection established with: {}'.format(addr))
     if not os.fork():
         header = {
             "type": "",
@@ -38,12 +40,12 @@ while True:
                 data = conn.recv(100).decode()
                 if data == "":
                     continue
-                if data[-3:] == "EOF":
-                    output_file.write(data[0:-3])
+                if data == "EOF":
                     conn.send("File read. Closing connection. EOF".encode())
                     output_file.close()
+                    print('File read. Connection with: {} has now been closed'.format(addr))
                     conn.close()
-                    sys.exit(0)
+                    break
                 if data.startswith('PUT'):
                     dc = data
                     data = data.split()
@@ -51,18 +53,18 @@ while True:
                     header['url'] = current_dir + data[1]
                     if not os.path.exists(header['url']):
                         open(header['url'], 'w+').close()
+                        output_file = open(header['url'], 'a')
                     else:
-                        conn.send("Closing connection. File exists in server. EOF".encode())
-                        conn.close()
-                        sys.exit(0)
-                    output_file = open(header['url'], 'a')
+                        output_file = open(header['url'], 'w+')
                     conn.send(dc.encode())
                 else:
                     output_file.write(data)
                     conn.send(data.encode())
         except:
-            print('Connection lost!')
+            print('Something went wrong! Connection with clients has been lost.')
+            conn.send("EOF".encode())
             conn.close()
-            sys.exit(0)
+            sys.exit(1)
+            break
 
 server.close()

@@ -7,14 +7,13 @@
 This directory contains the following files: 
 
 
-* fileClient.py - a python3 executable file that serves as a basic shell that
-  can do the following:
+* fileClient.py - a python3 executable file that serves as a basic client connecting to the server from fileServer.py that can do the following:
 
   1. Connect to the server created by running fileServer.py 
 
-  2. By inputting a file name that exists in the directory which this file exists in, you can send a file to the server.
+  2. By inputting a file name that exists in the directory for which this file exists in, you can send a file to the server.
 
-* fileServer.py - a python3 executable file that creates a naive server that listens to port 5016. 
+* fileServer.py - a python3 executable file that creates a naive server that listens to port 50001 
 
   1. Creates a server that clients can connect to in order to send files. 
 

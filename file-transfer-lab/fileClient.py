@@ -62,11 +62,12 @@ try:
     while received_len < sent_len:
         data = s.recv(100).decode()
         if data[-3:] == "EOF":
+            #print("Something went wrong! Lost connection to server.")
             s.close()
-            sys.exit(0)
+            sys.exit(1)
         received_len += len(data)
 
-    print('sending file')
+    print('Sending file...\n...\n')
     with open(file, 'r') as file:
         for line in file:
             s.send(line.encode())
@@ -77,13 +78,13 @@ try:
                 received_len += len(data)
     s.send("EOF".encode())
     s.shutdown(socket.SHUT_WR)      # no more output
-    print('shutting down client')
+    print('File has been successfully sent! Shutting down client connection now.')
     while 1:
         data = s.recv(100).decode()
         if data[-3:] == "EOF":
             break
 except:
-    print('Server has abruptly been shutdown. Try again later.')
-    s.close()
-    sys.exit(0)
+    print('Something went wrong! Client or Server connection lost. Try again later.')
+    #s.close()
+    sys.exit(1)
 s.close()
